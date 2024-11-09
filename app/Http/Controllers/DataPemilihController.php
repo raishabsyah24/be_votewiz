@@ -18,31 +18,28 @@ class DataPemilihController extends Controller
     // CREATE
     public function store(Request $request)
     {
-        $this->authorizeAdmin($request->user());
-
-        $validatedData = $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'nik' => 'required|string|unique:data_pemilih',
+            'nik' => 'required|string|unique:users,nik',
             'unit_apartement' => 'required|string',
             'nomor_unit_apartement' => 'required|string',
-            'email' => 'required|string|email|unique:data_pemilih',
+            'email' => 'required|string|email|max:255|unique:users,email',
             'no_telephone' => 'required|string',
             'password' => 'required|string|min:8',
-            'upload_image' => 'nullable|image|max:2048',
+            'role' => 'required|in:admin,user',
+            'upload_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
-        // Handle image upload
+        // Upload image jika ada
         if ($request->hasFile('upload_image')) {
-            $path = $request->file('upload_image')->store('public/images');
-            $validatedData['upload_image'] = $path;
+            $validated['upload_image'] = $request->file('upload_image')->store('uploads', 'public');
         }
 
-        $validatedData['password'] = Hash::make($request->password);
-        $validatedData['role'] = 'user'; // Set default role
+        // Hash password dan buat user
+        $validated['password'] = Hash::make($request->password);
+        $user = User::create($validated);
 
-        $users = User::create($validatedData);
-
-        return response()->json($users, 201);
+        return response()->json(['message' => 'User registered successfully!', 'user' => $user]);
     }
 
     // READ (index)

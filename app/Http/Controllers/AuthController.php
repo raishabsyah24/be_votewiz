@@ -9,31 +9,36 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
+
     public function register(Request $request)
     {
-        $validated = $request->validate([
+        $this->authorizeAdmin($request->user());
+
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'nik' => 'required|string|unique:users,nik',
+            'nik' => 'required|string|unique:data_pemilih',
             'unit_apartement' => 'required|string',
             'nomor_unit_apartement' => 'required|string',
-            'email' => 'required|string|email|max:255|unique:users,email',
+            'email' => 'required|string|email|unique:data_pemilih',
             'no_telephone' => 'required|string',
             'password' => 'required|string|min:8',
-            'role' => 'required|in:admin,user',
-            'upload_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'upload_image' => 'nullable|image|max:2048',
         ]);
 
-        // Upload image jika ada
+        // Handle image upload
         if ($request->hasFile('upload_image')) {
-            $validated['upload_image'] = $request->file('upload_image')->store('uploads', 'public');
+            $path = $request->file('upload_image')->store('public/images');
+            $validatedData['upload_image'] = $path;
         }
 
-        // Hash password dan buat user
-        $validated['password'] = Hash::make($request->password);
-        $user = User::create($validated);
+        $validatedData['password'] = Hash::make($request->password);
+        $validatedData['role'] = 'user'; // Set default role
 
-        return response()->json(['message' => 'User registered successfully!', 'user' => $user]);
+        $users = User::create($validatedData);
+
+        return response()->json($users, 201);
     }
+
 
     public function login(Request $request)
     {
@@ -113,7 +118,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'User deleted successfully!']);
     }
 
-    public function index ()
+    public function index()
     {
         $users = User::all();
         return response()->json($users);
