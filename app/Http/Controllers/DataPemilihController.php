@@ -21,10 +21,10 @@ class DataPemilihController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'nik' => 'required|string|unique:data_pemilih',
+            'nik' => 'required|string|unique:users,nik',
             'unit_apartement' => 'required|string',
             'nomor_unit_apartement' => 'required|string',
-            'email' => 'required|string|email|unique:data_pemilih',
+            'email' => 'required|string|email|unique:users,email',
             'no_telephone' => 'required|string',
             'password' => 'required|string|min:8',
             'role' => 'required|in:admin,user',

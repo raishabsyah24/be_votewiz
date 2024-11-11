@@ -41,7 +41,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // });
 
     Route::prefix('data-pemilih')->group(function () {
-        Route::post('/', [DataPemilihController::class, 'store']); // Create
+        Route::post('/data-pemilih', [DataPemilihController::class, 'store']); // Create
         Route::get('/data-pemilih', [DataPemilihController::class, 'index']); // Read
         Route::put('data-pemilih/{id}', [DataPemilihController::class, 'update']); // Update
         Route::delete('/data-pemilih/{id}', [DataPemilihController::class, 'destroy']); // Delete

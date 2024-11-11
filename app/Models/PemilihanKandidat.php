@@ -11,8 +11,11 @@ class PemilihanKandidat extends Model
 
     protected $fillable = [
         'no_urut',
-        'other_field1',
-        'other_field2',
+        'kandidat_id',
+        'posisi_id',
+        'slogan',
+        'visi_misi_path',
+        'nama_pemilihan_id'
         // Add other fields as needed
     ];
 
