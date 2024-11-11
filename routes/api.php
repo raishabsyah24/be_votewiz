@@ -35,9 +35,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
 
-    Route::middleware(['auth:api'])->group(function () {
-        Route::resource('data-pemilih', DataPemilihController::class)
-            ->only(['index', 'store', 'update', 'destroy']);
+    // Route::middleware(['auth:api'])->group(function () {
+    //     Route::resource('data-pemilih', DataPemilihController::class)
+    //         ->only(['index', 'store', 'update', 'destroy']);
+    // });
+
+    Route::prefix('data-pemilih')->group(function () {
+        Route::post('/', [DataPemilihController::class, 'store']); // Create
+        Route::get('/data-pemilih', [DataPemilihController::class, 'index']); // Read
+        Route::put('data-pemilih/{id}', [DataPemilihController::class, 'update']); // Update
+        Route::delete('/data-pemilih/{id}', [DataPemilihController::class, 'destroy']); // Delete
     });
 
 

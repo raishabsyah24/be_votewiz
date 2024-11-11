@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DataPemilih;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -18,25 +17,28 @@ class DataPemilihController extends Controller
     // CREATE
     public function store(Request $request)
     {
+        $this->authorizeAdmin($request->user());
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'nik' => 'required|string|unique:users,nik',
+            'nik' => 'required|string|unique:data_pemilih',
             'unit_apartement' => 'required|string',
             'nomor_unit_apartement' => 'required|string',
-            'email' => 'required|string|email|max:255|unique:users,email',
+            'email' => 'required|string|email|unique:data_pemilih',
             'no_telephone' => 'required|string',
             'password' => 'required|string|min:8',
             'role' => 'required|in:admin,user',
-            'upload_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'upload_image' => 'nullable|image|max:2048',
         ]);
 
-        // Upload image jika ada
+        // Handle image upload
         if ($request->hasFile('upload_image')) {
             $validated['upload_image'] = $request->file('upload_image')->store('uploads', 'public');
         }
 
         // Hash password dan buat user
         $validated['password'] = Hash::make($request->password);
+        $validated['role'] = 'user';
         $user = User::create($validated);
 
         return response()->json(['message' => 'User registered successfully!', 'user' => $user]);
